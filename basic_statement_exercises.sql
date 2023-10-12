@@ -50,5 +50,5 @@ SELECT name, sales FROM albums WHERE sales < 20;
 -- 'Titanic: Music from the Motion Picture', '18.1'
 -- 'Nevermind', '16.7'
 -- 'The Wall', '17.6'
-SELECT 'name, sales FROM albums WHERE sales < 20' as low_selling_albums
+SELECT name as low_selling_albums, sales FROM albums WHERE sales < 20;
 #Renamed sales < 20 as low_selling_albums
