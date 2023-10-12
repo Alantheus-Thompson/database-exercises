@@ -6,13 +6,15 @@ SHOW databases;
 USE employees;
 SELECT database();
 SHOW tables;
-DESCRIBE employees; #employees contain emp num, birth, first & last, gender, and hire date...number type fields are emp no, birth, and hire dates
-# string characters include first and last, and gender
-# date types are birth and hire
-# there is no relationship to employees and department that I see unless emp no is generated using the department number as the base or a third table links them
+DESCRIBE employees; 
+#11 Which tables do you think contain a numeric type column?  dept_emp, dept_mgr, employees, salaries, departments
+#12 which tables contain a string type column? Departments, dept_emp, dept_manager, employees, titles
+#13 which tables do you think contain a date type column?  dept_emp dept_manager, employees, salaries, titles
+#14 What relationship between the employees and the department tables? there is no relationship to employees and department that I see unless emp no is generated using the department number as the base or a third table links them
 SHOW tables;
 DESCRIBE dept_manager;
 SHOW CREATE TABLE dept_manager;
+#15 Show the code that created the dept_manager table
 #CREATE TABLE `dept_manager` (
    #`emp_no` int NOT NULL,
   #`dept_no` char(4) NOT NULL,
