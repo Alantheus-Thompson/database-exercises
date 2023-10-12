@@ -9,7 +9,7 @@ SHOW tables;
 DESCRIBE employees; #employees contain emp num, birth, first & last, gender, and hire date...number type fields are emp no, birth, and hire dates
 # string characters include first and last, and gender
 # date types are birth and hire
-# there is no relationship to employees and department that I see unless emp no is generated using the department number as the base
+# there is no relationship to employees and department that I see unless emp no is generated using the department number as the base or a third table links them
 SHOW tables;
 DESCRIBE dept_manager;
 SHOW CREATE TABLE dept_manager;
