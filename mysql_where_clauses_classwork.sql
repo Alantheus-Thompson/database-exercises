@@ -58,7 +58,31 @@ from users
 	where role_id = 3 
 		or name = 'jane';
         
-SELECT * 
-	from users
-		where role_id = 3
-        or w
+        
+-- ORDER BY 
+
+SHOW databases;
+USE chipotle;
+select *
+	from orders
+		where item_name like '%bowl%'
+			and quantity > 1
+		Order by quantity asc; -- default is ascend 
+        
+select *
+	from orders
+		where item_name like '%bowl%'
+			and quantity > 1
+		order by quantity desc, item_name;
+
+-- LIMIT sets limits and will be last thing
+
+select * 
+	from orders 
+		limit 5;
+-- can use offset with limit.  It skips a set amount
+
+select *
+	from orders
+		limit 5
+        offset 10;
