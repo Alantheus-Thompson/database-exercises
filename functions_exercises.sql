@@ -37,11 +37,8 @@ select *, datediff(now(),hire_date)+1 as days_worked -- added back a day to acco
 
 -- #6 Find the smallest and largest current salary from the salaries table
 
-select *
-	from salaries;
 select min(salary), max(salary)
-	from salaries
-    order by to_date desc;
+	from salaries; 
     
 -- ASNWER: min salary = $38,623 & max salary = $158,220
 
