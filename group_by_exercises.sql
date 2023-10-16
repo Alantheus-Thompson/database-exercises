@@ -116,3 +116,6 @@ FROM (
     GROUP BY username
     HAVING duplicate_count > 1
 ) AS duplicates;
+
+
+-- ANSWER: 27403
