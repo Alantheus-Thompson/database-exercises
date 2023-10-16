@@ -28,8 +28,9 @@ Select count(upper(concat(first_name,' ',last_name))) as Number_of_Employees
 -- find how many days they have been working at the company (Hint: You will also need to 
 -- use NOW() or CURDATE()),
 
-select *, datediff(now(),hire_date)+1 as 
-Days_Worked
+select *, datediff(now(),hire_date)+1 as days_worked -- added back a day to account for current
+-- day which I believe is a more accurate answer.  For example if someone was hired on the 1st 
+-- and now is the 10th datediff returns 9 but they have been with the company 10 days.
 	from employees	
 		 where hire_date like '199%'
          and birth_date like '%12-25';
