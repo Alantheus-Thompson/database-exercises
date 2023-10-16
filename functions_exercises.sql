@@ -28,7 +28,7 @@ Select count(upper(concat(first_name,' ',last_name))) as Number_of_Employees
 -- find how many days they have been working at the company (Hint: You will also need to 
 -- use NOW() or CURDATE()),
 
-select emp_no, first_name, last_name, birth_date, hire_date, datediff(now(),hire_date)+1 as 
+select *, datediff(now(),hire_date)+1 as 
 Days_Worked
 	from employees	
 		 where hire_date like '199%'
