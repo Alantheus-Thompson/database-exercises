@@ -118,8 +118,11 @@ FROM (
     HAVING duplicate_count > 1
 ) AS duplicates;
 
-
 -- ANSWER: 27403
+
+### NOTE TO SELF: can not use the results of one query to another, but thought that was what was
+### happening above.  What is actually happening is that the same sub-query is running with a 
+### different main query which produces the different result.
 
 -- Bonuses:
 -- #1 Determine the historic average salary for each employee. When you hear, read, or think 
@@ -188,4 +191,18 @@ select emp_no, avg(salary) as average_salary
 	from salaries
         group by emp_no
 			having average_salary between 80000 and 90000;
-       
+  
+-- Playground--
+
+select emp_no, avg(salary) as average_salary, stddev(salary) as stdev_salary
+	from salaries
+        group by emp_no
+			having avg(salary) < (select avg(salary) - stddev(salary) from salaries) 
+            OR avg(salary) > (select avg(salary) - stddev(salary) from salaries);
+            
+	### Sub Query in FROM vs HAVING clause: Use a subquery in the FROM clause when you want to 
+    ### create a derived table that you will use as a source in your main query or when you need
+    ### to simplify the structure of your main query.
+    ### Use a subquery in the HAVING clause when you want to filter or aggregate results based 
+    ### on conditions that involve aggregated values or when you need to filter the result set 
+    ### based on post-aggregation criteria.
