@@ -14,7 +14,7 @@ Select distinct title
 -- GROUP BY.
 
 use employees;
-select distinct last_name, count(last_name) # used emp_no as well in case emp have same last name but are 
+select last_name, count(last_name) # used emp_no as well in case emp have same last name but are 
 -- different people...also because otherwise I don't see the purpose of the group by function 
 -- since the where function would produce the same output but using emp_no didn't work with group by 
 -- function...the plot grows thicker my dear Watson.
@@ -29,7 +29,7 @@ select distinct last_name, count(last_name) # used emp_no as well in case emp ha
 -- #4 Write a query to to find all unique combinations of first and last names of all employees 
 -- whose last names start and end with 'E'.
 
-select distinct concat(first_name,' ',last_name) as Full_Name -- Tried to use count in 
+select concat(first_name,' ',last_name) as Full_Name -- Tried to use count in 
 -- several places but gives error message can't group on full_name.  Group by full_name works without
 -- count though.  
 	from employees
@@ -41,12 +41,12 @@ select distinct concat(first_name,' ',last_name) as Full_Name -- Tried to use co
 -- #5 Write a query to find the unique last names with a 'q' but not 'qu'. Include those names 
 -- in a comment in your sql code.
 
-select distinct count(last_name)
+select count(last_name), last_name
 	from employees
 		where last_name like '%q%' and last_name not like '%qu%'
 			group by last_name;
 
--- ANSWER: Chelq (168), Lindquist (189), Qiwen (190)
+-- ANSWER: Chelq (189), Lindquist (190), Qiwen (168)
 
 -- #6 Add a COUNT() to your results for exercise 5 to find the number of employees with the 
 -- same last name.
@@ -56,10 +56,11 @@ select distinct count(last_name)
 -- #7 Find all employees with first names 'Irena', 'Vidya', or 'Maya'. Use COUNT(*) and GROUP 
 -- BY to find the number of employees with those names for each gender.
 
-select distinct first_name, gender, count(*) as employee_count
+select first_name, gender, count(*) as employee_count
 	from employees
 		where first_name IN ('Irena', 'Vidya', 'Maya')
-			group by first_name, gender;
+			group by first_name, gender
+				Order By first_name;
 
 -- ANSWER: Run code above
 
@@ -74,7 +75,7 @@ date_format(birth_date,'%m%y'))) as username, count(*) as unique_username_count
 -- ANSWER: Run code above
 
 -- #9 From your previous query, are there any duplicate usernames? What is the highest number 
--- of times a username shows up? Bonus: How many duplicate usernames are there?
+-- of times a username shows up? 
 
 Select distinct lower(concat(substr(first_name, 1, 1),substr(last_name,1,4),'_', 
 date_format(birth_date,'%m%y'))) as username, count(*) as duplicate_count
@@ -92,7 +93,7 @@ date_format(birth_date,'%m%y'))) as username, count(*) as duplicate_count
 ## playing around: could not run when select calls out column in select function and not in group
 ## by. 
 
--- #9 BONUS: 
+-- #9 BONUS: How many duplicate usernames are there?
 
 -- Using sum(duplicate_count) as total_duplicate_count in select distinct line did not work
 -- response was unknown colunn duplicate_count in field list...REASON: you can't use the alias 
@@ -110,7 +111,8 @@ FROM (
 ORDER BY duplicate_count DESC;
 
 -- To calculate the total count of duplicates:
-SELECT SUM(duplicate_count) AS total_duplicate_count
+
+SELECT count(duplicate_count) AS total_duplicate_count
 FROM (
     SELECT LOWER(CONCAT(SUBSTRING(first_name, 1, 1), SUBSTRING(last_name, 1, 4), '_', DATE_FORMAT(birth_date, '%m%y'))) AS username, COUNT(*) AS duplicate_count
     FROM employees
@@ -118,7 +120,7 @@ FROM (
     HAVING duplicate_count > 1
 ) AS duplicates;
 
--- ANSWER: 27403
+-- ANSWER: 13251
 
 ### NOTE TO SELF: can not use the results of one query to another, but thought that was what was
 ### happening above.  What is actually happening is that the same sub-query is running with a 
@@ -138,16 +140,18 @@ select emp_no, avg(salary) as historical_avg
 -- #2 Using the dept_emp table, count how many current employees work in each department. The 
 -- query result should show 9 rows, one for each department and the employee count.
 
-select dept_no, count(*) as employees_in_each_department
+select dept_no, count(*) as current_employees_in_each_department
 	from dept_emp
-    group by dept_no;
+		where to_date = '9999-01-01'
+			group by dept_no
+				order by current_employees_in_each_department desc;
     
 -- ANSWER: Run code above
 
 -- #3 Determine how many different salaries each employee has had. This includes both historic 
 -- and current.
 
-select distinct emp_no, count(emp_no) as num_of_diff_salaries
+select distinct emp_no, count(*) as num_of_diff_salaries
 	from salaries
 		group by emp_no;
 
@@ -197,8 +201,8 @@ select emp_no, avg(salary) as average_salary
 select emp_no, avg(salary) as average_salary, stddev(salary) as stdev_salary
 	from salaries
         group by emp_no
-			having avg(salary) < (select avg(salary) - stddev(salary) from salaries) 
-            OR avg(salary) > (select avg(salary) - stddev(salary) from salaries);
+			having avg(salary) < (select avg(salary) - stddev((salary)*3) from salaries) 
+            OR avg(salary) > (select avg(salary) - stddev((salary)*3) from salaries);
             
 	### Sub Query in FROM vs HAVING clause: Use a subquery in the FROM clause when you want to 
     ### create a derived table that you will use as a source in your main query or when you need
