@@ -8,30 +8,37 @@ show tables;
 select *
 	from users
 		inner join roles 
-			on users.id = roles.id;
--- EXPECTATION: I expected to only get shared key outputs but recieved the full 
--- information for each table...because of *??? 
-
+			on users.role_id = roles.id;
+-- EXPECTATION: I expected to only get shared key outputs...confirmed
+-- Left Join 
 select * 
 	from users
 		left join roles
-			on users.id = roles.id;
+			on users.role_id = roles.id;
 -- EXPECTATION: To return null values in users...confirmed
-
+-- Right Join
 select *
 	from users 
 		right join roles 
-			on users.id = roles.id;
+			on users.role_id = roles.id;
             
--- EXPECTATION: to return null values in roles...no null values present?
-
+-- EXPECTATION: to return null values in roles...confirmed
+-- Aggregate Function
+ select count(users.id) as cnt, roles.name
+	from users
+		left join roles
+			on users.role_id = roles.id
+				Group by roles.name;
+                
+ 
 -- Employee Database Exercises -- 
+
 use employees; 
 
 ### "Formuala" 
 ### select x, y, z
 ### 	from database table
-###			inner join ::table you wish to connect:: as if you want an alias
+###			inner join ::table you wish to connect:: AS if you want an alias
 ### 			on ::database table in from.whatever the key is:: = ::inner join table
 ###					.key::
 ###			inner join ::repeat as required based on chaining requirement::
@@ -68,7 +75,7 @@ select depts.dept_name, concat(emp.first_name,' ', emp.last_name) as Department_
 # 4 Find the current titles of employees currently working in the Customer Service 
 -- department.
 
-select title, count(*) as cnt
+select employee_title.title, count(*) as cnt
 	from employees as emp
 		inner join dept_emp as dept_employees
 			on emp.emp_no = dept_employees.emp_no
@@ -78,8 +85,8 @@ select title, count(*) as cnt
 			on emp.emp_no = employee_title.emp_no
 		where employee_title.to_date > curdate() and depts.dept_name = 
         'Customer Service'
-        group by title
-        order by cnt;
+        group by employee_title.title
+        order by employee_title.title;
         
 ### where to_date did not work.  dept_mgr and titles tables both
 ## have to_dates.  Need to clearly point to which one
@@ -88,24 +95,22 @@ select title, count(*) as cnt
 		
 #5 Find the current salary of all current managers.
 
-select depts.dept_name, concat(emp.first_name,' ', emp.last_name) as full_name, salary 
+select depts.dept_name, concat(emp.first_name,' ', emp.last_name) as 'Current Manager', salary 
 	from employees as emp
 		inner join dept_manager as dept_mgr
 			on emp.emp_no = dept_mgr.emp_no
 		inner join departments as depts
 			on dept_mgr.dept_no = depts.dept_no
-		inner join titles as employee_title
-			on emp.emp_no = employee_title.emp_no
 		inner join salaries as employee_salaries
 			on emp.emp_no = employee_salaries.emp_no
-		where employee_salaries.to_date > curdate() and employee_title.to_date > curdate()
-			and employee_title.title = 'Manager';
-            
+		where employee_salaries.to_date > curdate() and dept_mgr.to_date > curdate()
+        order by depts.dept_name;
+			
 -- ANSWER: Run code above
 
 # 6 Find the number of current employees in each department.
 
-select depts.dept_no, depts.dept_name, count(*) as cnt
+select depts.dept_no, depts.dept_name, count(*) as 'num_employees'
 	from employees as emp
 		inner join dept_emp as dept_employees
 			on emp.emp_no = dept_employees.emp_no
@@ -120,7 +125,7 @@ select depts.dept_no, depts.dept_name, count(*) as cnt
 -- #7 Which department has the highest average salary? Hint: Use current not historic 
 -- information.
 
-select depts.dept_name, avg(employee_salaries.salary) as average_salary
+select depts.dept_name, round(avg(employee_salaries.salary),2) as average_salary
 	from employees as emp
 		inner join dept_emp as dept_employees
 			on emp.emp_no = dept_employees.emp_no
@@ -128,8 +133,8 @@ select depts.dept_name, avg(employee_salaries.salary) as average_salary
 			on dept_employees.dept_no = depts.dept_no
 		inner join salaries as employee_salaries
 			on emp.emp_no = employee_salaries.emp_no
-		where employee_salaries.to_date > curdate() and dept_employees.to_date > curdate()
-        group by depts.dept_name
+		where employee_salaries.to_date > curdate() and dept_employees.to_date > curdate() 
+		group by depts.dept_name
         order by average_salary desc
         limit 1;
 
@@ -170,7 +175,7 @@ select emp.first_name, emp.last_name, emp_salaries.salary, depts.dept_name
 -- #10 Determine the average salary for each department. Use all salary information 
 -- and round your results.
 
-select depts.dept_name, round(avg(employee_salaries.salary)) as average_salary
+select depts.dept_name, round(avg(employee_salaries.salary),0) as average_salary
 	from employees as emp
 		inner join dept_emp as dept_employees
 			on emp.emp_no = dept_employees.emp_no
@@ -195,10 +200,12 @@ depts.dept_name as 'Department Name', concat(mgr.first_name,' ',mgr.last_name) a
 		inner join departments as depts 
 			on dept_emps.dept_no = depts.dept_no
 		inner join dept_manager as mgrs 
-			on dept_emp.dept_no = mgrs.dept_no
+			on dept_emps.dept_no = mgrs.dept_no
 		inner join employees as mgr 
-			on mgrs.emp_no = emp.emp_no
-		inner join salaries as emp_salaries using (emp_no)
-	where mgrs.to_date > curdate() and emp_salaries.to_date > curdate();
+			on mgr.emp_no = mgrs.emp_no
+		inner join salaries as emp_salaries 
+			on emp.emp_no = emp_salaries.emp_no
+	where dept_emps.to_date>curdate()
+    group by depts.dept_name;
     
     
