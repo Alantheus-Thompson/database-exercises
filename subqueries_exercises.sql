@@ -112,8 +112,8 @@ select count(*)
 -- (Hint: you can use a built-in function to calculate the standard deviation.) 
 -- What percentage of all salaries is this?
 select (cnt/(
-	select count(*) from salaries
-    )) as percentage-- how do i put total salary count here
+			select count(*) from salaries
+			)*100)as percentage_all_salaries_within_1SD_of_max_salary
 	from (
 			select count(*) as cnt
             from salaries
@@ -123,6 +123,7 @@ select (cnt/(
                     )  and to_date > curdate()
 				) as cnt_sub;
 
+-- .0027%
 
 -- Hint You will likely use multiple subqueries in a variety of ways
 
