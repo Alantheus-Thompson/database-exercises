@@ -134,8 +134,13 @@ select count(*)
 -- (Hint: you can use a built-in function to calculate the standard deviation.) 
 -- What percentage of all salaries is this?
 select (cnt/(
-			select count(*) from salaries
-			)*100)as percentage_all_salaries_within_1SD_of_max_salary
+			select count(*) 
+            from salaries
+            where to_date>curdate() -- question does not specify all current salaries but 
+            -- assumption is that since they are looking at the std of current salaries that
+            -- they would want to compare results to current salaries.
+			)
+            *100) as percentage_all_salaries_within_1SD_of_max_salary
 	from (
 			select count(*) as cnt
             from salaries
